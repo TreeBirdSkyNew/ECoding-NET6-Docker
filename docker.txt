@@ -1,0 +1,93 @@
+ID
+aqw9753113579zsx1357997531
+Password
+Ricardinho@1407
+
+C:\Users\Philippe\source\repos\ECoding-NET6-Docker
+
+docker pull mcr.microsoft.com/mssql/server:2017-latest
+docker pull mcr.microsoft.com/mssql/server:2019-latest
+docker pull mcr.microsoft.com/mssql/server:2022-latest
+
+
+docker build -t aqw9753113579zsx1357997531/templateprojectwebapi .
+
+docker login -u aqw9753113579zsx1357997531 -p Ricardinho@1407
+
+docker push aqw9753113579zsx1357997531/ecoding
+
+docker build --no-cache -t aqw9753113579zsx1357997531/templateprojectwebapi:build .
+
+
+
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Ricardinho@1407" \
+   -p 1433:1433 --name sql1 --hostname sql1 \
+   -d \
+   mcr.microsoft.com/mssql/server:2017-latest
+
+
+docker exec -it sql1 "bash"
+
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Ricardinho@1407"
+
+CREATE DATABASE TestDB;
+
+SELECT Name from sys.databases;
+
+GO
+
+USE TestDB;
+
+CREATE TABLE Inventory (id INT, name NVARCHAR(50), quantity INT);
+INSERT INTO Inventory VALUES (1, 'banana', 150); INSERT INTO Inventory VALUES (2, 'orange', 154);
+GO
+
+SELECT * FROM Inventory WHERE quantity > 152;
+GO
+QUIT
+
+sqlcmd -S <ip_address>,1433 -U SA -P "<YourNewStrong@Passw0rd>"
+
+sudo docker stop sql1
+sudo docker rm sql1
+
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' name_or_id
+
+
+
+version: '3.4'
+
+networks:
+  ecodingnetwork:
+  
+services:
+
+  sqldata:
+    container_name: sqldata
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+     - 8002:1443
+    environment:
+     - ACCEPT_EULA=Y
+     - MSSQL_SA_PASSWORD=Ricardinho@1407
+    networks:
+     - ecodingnetwork
+
+  templateproject-webapi:
+    container_name: templateproject-webapi
+    image: ${DOCKER_REGISTRY-}templateprojectwebapi
+    build:
+      context: .
+      dockerfile: TemplateProject-WebApi/Dockerfile
+    ports:
+     - 8001:80
+    depends_on:
+     - sqldata
+    networks:
+     - ecodingnetwork
+
+
+
+
+
+

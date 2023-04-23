@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "templateproject-webapi": "StartWithoutDebugging",
+        "e-coding-mvc-net6-0": "StartWithoutDebugging",
+        "sqldata": "StartWithoutDebugging",
+        "templatetechnique-webapi": "StartWithoutDebugging"
+      }
+    }
+  }
+}

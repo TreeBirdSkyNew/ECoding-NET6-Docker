@@ -1,0 +1,57 @@
+
+version: '3.4'
+
+networks:
+  ecodingnetwork:
+  
+services:
+
+  sqldata:
+    container_name: sqldata
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+     - 8000:1443
+    environment:
+     - ACCEPT_EULA=Y
+     - MSSQL_SA_PASSWORD=Ricardinho@1407
+    networks:
+     - ecodingnetwork
+
+  e-coding-mvc-net6-0:
+    container_name: ecoding-mvc-net60
+    image: ${DOCKER_REGISTRY-}ecodingmvcnet60
+    build:
+        context: .
+        dockerfile: E-CODING-MVC-NET6-0/Dockerfile
+    ports:
+     - 8001:80
+    depends_on:
+     - sqldata
+    networks:
+     - ecodingnetwork
+
+  templateproject-webapi:
+    container_name: templateproject-webapi
+    image: ${DOCKER_REGISTRY-}templateprojectwebapi
+    build:
+      context: .
+      dockerfile: TemplateProject-WebApi/Dockerfile
+    ports:
+     - 8002:80
+    depends_on:
+     - sqldata
+    networks:
+     - ecodingnetwork
+       
+  templatetechnique-webapi:
+    image: ${DOCKER_REGISTRY-}templatetechniquewebapi
+    build:
+      context: .
+      dockerfile: TemplateTechnique-WebApi/Dockerfile
+    ports:
+     - 8003:80
+    depends_on:
+     - sqldata
+    networks:
+     - ecodingnetwork
+    
